@@ -97,10 +97,12 @@ trait HandleFormat
         string $thousandsSeparator = ',',
     ): string
     {
+        // @codeCoverageIgnoreStart
         if ($decimals < 0 && PHP_VERSION_ID < 80300) {
             $number = round($number, $decimals);
             $decimals = 0;
         }
+        // @codeCoverageIgnoreEnd
 
         return number_format($number, $decimals, $decimalSeparator, $thousandsSeparator);
     }
