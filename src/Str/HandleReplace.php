@@ -57,11 +57,7 @@ trait HandleReplace
 
         return match ($case) {
             CaseSensitivity::Sensitive => str_replace($search, $replacement, $value),
-            CaseSensitivity::Insensitive => preg_replace_callback(
-                '/' . preg_quote($search, '/') . '/iu',
-                static fn(): string => $replacement,
-                $value,
-            ) ?? $value,
+            CaseSensitivity::Insensitive => self::replaceInsensitive($value, $search, $replacement, $encoding),
         };
     }
 
@@ -101,12 +97,18 @@ trait HandleReplace
             return $value;
         }
 
-        $searches = array_keys($replacements);
-        $values = array_values($replacements);
-
         return match ($case) {
-            CaseSensitivity::Sensitive => str_replace($searches, $values, $value),
-            CaseSensitivity::Insensitive => str_ireplace($searches, $values, $value),
+            CaseSensitivity::Sensitive => str_replace(array_keys($replacements), array_values($replacements), $value),
+            CaseSensitivity::Insensitive => array_reduce(
+                array_keys($replacements),
+                static fn (string $carry, string $search): string => self::replaceInsensitive(
+                    $carry,
+                    $search,
+                    $replacements[$search],
+                    $encoding,
+                ),
+                $value,
+            ),
         };
     }
 
@@ -192,6 +194,26 @@ trait HandleReplace
         }
 
         return strtr($value, $mapping);
+    }
+
+    private static function replaceInsensitive(
+        string $value,
+        string $search,
+        string $replacement,
+        Encoding $encoding,
+    ): string
+    {
+        $encodingName = $encoding->value;
+        $searchLength = mb_strlen($search, $encodingName);
+        $offset = 0;
+        $result = '';
+
+        while (($position = mb_stripos($value, $search, $offset, $encodingName)) !== false) {
+            $result .= mb_substr($value, $offset, $position - $offset, $encodingName) . $replacement;
+            $offset = $position + $searchLength;
+        }
+
+        return $result . mb_substr($value, $offset, null, $encodingName);
     }
 
     /**

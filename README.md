@@ -66,10 +66,12 @@ A few invariants Phyx enforces and PHP doesn't:
 
 ## Requirements
 
-- PHP `^8.0`
+- PHP `^8.1`
+- `ext-intl`
 - `ext-mbstring`
 
 `str_increment` / `str_decrement` (PHP 8.3+) are polyfilled in `Phyx\Polyfills\AlphaIncrement` and used automatically when the native function is not available.
+`json_validate` (PHP 8.3+) is polyfilled through `polyfills/json_validate.php`, so `Phyx\Json::isValid()` is available on every supported PHP version.
 
 ## Development
 
