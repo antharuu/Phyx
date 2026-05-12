@@ -74,7 +74,7 @@ trait HandleFormat
      * Wraps PHP's `number_format`. Locale-independent: the decimal and
      * thousands separators are passed in, never read from the runtime
      * locale. Negative `$decimals` round to the corresponding power of ten
-     * (PHP 8.0+ behaviour).
+     * on every supported PHP version, matching PHP 8.3+ native behaviour.
      *
      * @param float $number The number to format.
      * @param int $decimals Number of decimals to show. Defaults to `0`.
@@ -97,6 +97,13 @@ trait HandleFormat
         string $thousandsSeparator = ',',
     ): string
     {
+        // @codeCoverageIgnoreStart
+        if ($decimals < 0 && PHP_VERSION_ID < 80300) {
+            $number = round($number, $decimals);
+            $decimals = 0;
+        }
+        // @codeCoverageIgnoreEnd
+
         return number_format($number, $decimals, $decimalSeparator, $thousandsSeparator);
     }
 }

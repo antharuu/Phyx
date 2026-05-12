@@ -15,6 +15,9 @@ namespace Phyx;
  */
 class Str
 {
+    private const DEFAULT_HTML_FLAGS = ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5;
+    private const DEFAULT_TRIM_CHARS = " \t\n\r\0\x0B";
+
     use Str\HandleCase;
     use Str\HandleCompare;
     use Str\HandleEncode;

@@ -16,16 +16,6 @@ use Phyx\Enums\Encoding;
 trait HandleHtml
 {
     /**
-     * The default flag set used by every HTML-encoding method in this trait.
-     *
-     * `ENT_QUOTES` makes both single and double quotes escape — necessary
-     * when embedding values in attributes. `ENT_SUBSTITUTE` replaces
-     * invalid sequences with the Unicode replacement character instead of
-     * returning an empty string. `ENT_HTML5` follows the HTML5 entity set.
-     */
-    private const DEFAULT_HTML_FLAGS = ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5;
-
-    /**
      * Escape the five HTML special characters in `$value`.
      *
      * Wraps PHP's `htmlspecialchars` with safe defaults
