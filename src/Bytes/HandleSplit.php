@@ -32,6 +32,10 @@ trait HandleSplit
             throw new \ValueError('Split length must be greater than 0.');
         }
 
+        if ($bytes === '') {
+            return [];
+        }
+
         return str_split($bytes, $length);
     }
 
