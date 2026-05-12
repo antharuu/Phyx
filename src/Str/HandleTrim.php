@@ -17,12 +17,6 @@ use Phyx\Enums\Side;
 trait HandleTrim
 {
     /**
-     * The default trim set: whitespace, tabs, line feeds, carriage returns,
-     * NUL, and vertical tabs — identical to PHP's default `trim()` set.
-     */
-    private const DEFAULT_TRIM_CHARS = " \t\n\r\0\x0B";
-
-    /**
      * Remove the leading and/or trailing occurrences of `$chars` from `$value`.
      *
      * Replaces PHP's three-way split between `ltrim`, `rtrim` and `trim`

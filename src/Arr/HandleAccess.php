@@ -7,8 +7,6 @@ namespace Phyx\Arr;
 /** Access helpers for \Phyx\Arr. */
 trait HandleAccess
 {
-    private const PATH_SEPARATOR_EMPTY_MESSAGE = 'Path separator must not be empty.';
-
     /**
      * Return a direct value from the array.
      *
