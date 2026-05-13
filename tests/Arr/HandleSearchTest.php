@@ -29,4 +29,33 @@ final class HandleSearchTest extends TestCase
         self::assertSame([2], Arr::where($array, static fn (mixed $value): bool => is_int($value), false));
         self::assertTrue(Arr::containsKey($array, 'c'));
     }
+
+    public function testFindHelpersUseValueThenKeyAndShortCircuit(): void
+    {
+        $visited = [];
+        $array = ['a' => 1, 'b' => 2, 'c' => 3];
+
+        $found = Arr::find($array, static function (int $value, string $key) use (&$visited): bool {
+            $visited[] = $key;
+            return $value > 1;
+        }, 'missing');
+
+        self::assertSame(2, $found);
+        self::assertSame(['a', 'b'], $visited);
+        self::assertSame('missing', Arr::find($array, static fn (int $value): bool => $value > 9, 'missing'));
+        self::assertSame('b', Arr::findKey($array, static fn (int $value): bool => $value === 2));
+        self::assertNull(Arr::findKey($array, static fn (int $value): bool => $value > 9));
+    }
+
+    public function testAnyAndAllUsePredicateSemantics(): void
+    {
+        $array = ['a' => 2, 'b' => 4, 'c' => 6];
+
+        self::assertTrue(Arr::any($array, static fn (int $value, string $key): bool => $key === 'b' && $value === 4));
+        self::assertFalse(Arr::any($array, static fn (int $value): bool => $value > 9));
+        self::assertTrue(Arr::all($array, static fn (int $value): bool => $value % 2 === 0));
+        self::assertFalse(Arr::all($array, static fn (int $value): bool => $value < 5));
+        self::assertFalse(Arr::any([], static fn (mixed $_value): bool => true));
+        self::assertTrue(Arr::all([], static fn (mixed $_value): bool => false));
+    }
 }

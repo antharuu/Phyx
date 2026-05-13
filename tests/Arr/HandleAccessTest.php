@@ -24,6 +24,26 @@ final class HandleAccessTest extends TestCase
         self::assertSame(['a' => null, 'b' => 2], $array);
     }
 
+    public function testOnlyKeepsRequestedExistingKeysInRequestedOrder(): void
+    {
+        $array = ['id' => 1, 'name' => 'Ada', 'email' => 'ada@example.test', 'password' => 'secret'];
+        $original = $array;
+
+        self::assertSame(['name' => 'Ada', 'id' => 1], Arr::only($array, ['name', 'missing', 'id']));
+        self::assertSame([], Arr::only($array, []));
+        self::assertSame($original, $array);
+    }
+
+    public function testExceptRemovesRequestedKeysAndPreservesRemainingOrder(): void
+    {
+        $array = ['id' => 1, 'name' => 'Ada', 'password' => 'secret', 'remember_token' => null];
+        $original = $array;
+
+        self::assertSame(['id' => 1, 'name' => 'Ada'], Arr::except($array, ['password', 'remember_token', 'missing']));
+        self::assertSame($array, Arr::except($array, []));
+        self::assertSame($original, $array);
+    }
+
     public function testPathAccessDoesNotMutate(): void
     {
         $array = ['user' => ['name' => null, 'roles' => ['admin']]];

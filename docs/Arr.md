@@ -3,7 +3,7 @@
 > Couche array de Phyx : une **façade statique** `Phyx\Arr` qui réécrit les fonctions natives PHP autour d'une API
 > cohérente, prédictible, typée PHPDoc, sans mutation implicite.
 >
-> 12 traits composés dans `Phyx\Arr`, plusieurs enums orthogonaux dans `Phyx\Enums\`, ~90 méthodes publiques couvrant
+> 13 traits composés dans `Phyx\Arr`, plusieurs enums orthogonaux dans `Phyx\Enums\`, ~100 méthodes publiques couvrant
 > les usages courants des tableaux PHP : accès, inspection, transformation, filtrage, tri, regroupement, set operations,
 > chemins imbriqués et conversions.
 
@@ -27,6 +27,8 @@ vocabulaire plus court et plus constant : `has`, `pluck`, `filter`, `reduce`, `g
 - Les callbacks reçoivent toujours la valeur en premier, puis la clé : `fn ($value, $key) => ...`.
 - Les méthodes de chemin utilisent le paramètre `$path` et le séparateur `.` par défaut, jamais une syntaxe magique
   implicite non documentée.
+- Les sélecteurs de collection acceptent un callback ou une clé/chemin `.` : `fn ($item, $key) => ...`, `'id'`,
+  `'user.email'`. Les chaînes sont toujours interprétées comme des sélecteurs, pas comme des callables PHP.
 
 ### Retours prédictibles
 
@@ -78,6 +80,10 @@ vocabulaire plus court et plus constant : `has`, `pluck`, `filter`, `reduce`, `g
 | `array_diff`                      | `diff`               |
 | `array_intersect`                 | `intersect`          |
 | `array_multisort` / `uasort`      | `sortBy`             |
+| `array_find`                      | `find`               |
+| `array_find_key`                  | `findKey`            |
+| `array_any`                       | `any`                |
+| `array_all`                       | `all`                |
 
 ### PHPDoc obligatoire
 
@@ -104,7 +110,7 @@ Chaque méthode publique porte un bloc PHPDoc complet :
 
 ## Traits (sous `Phyx\Arr\`)
 
-Façade `Phyx\Arr` = `use` de 12 traits, un trait = une responsabilité unique.
+Façade `Phyx\Arr` = `use` de 13 traits, un trait = une responsabilité unique.
 
 | #  | Trait             | Responsabilité                                               |
 |----|-------------------|--------------------------------------------------------------|
@@ -120,8 +126,10 @@ Façade `Phyx\Arr` = `use` de 12 traits, un trait = une responsabilité unique.
 | 10 | `HandleRandom`    | Random, shuffle, sample                                      |
 | 11 | `HandleWalk`      | Traversée récursive, dot/undot                               |
 | 12 | `HandleCombine`   | Zip, combine, pair, transpose                                |
+| 13 | `HandleSelector`  | Résolution interne des sélecteurs callback/clé/chemin         |
 
-Aucune dépendance croisée entre traits ; le vocabulaire partagé est `Phyx\Enums\*`.
+Les traits publics restent orientés responsabilité unique ; `HandleSelector` fournit uniquement des helpers privés partagés pour
+résoudre les sélecteurs callback/clé/chemin.
 
 ## API reference
 
@@ -130,6 +138,8 @@ Aucune dépendance croisée entre traits ; le vocabulaire partagé est `Phyx\Enu
 | Phyx                                                | PHP natif / logique        | Retour                    |
 |-----------------------------------------------------|----------------------------|---------------------------|
 | `Arr::get($array, $key, $default)`                  | `$array[$key] ?? ...`      | `mixed`                   |
+| `Arr::only($array, $keys)`                          | `array_intersect_key`      | `array`                   |
+| `Arr::except($array, $keys)`                        | `array_diff_key`           | `array`                   |
 | `Arr::getPath($array, $path, $default, $separator)` | dérivé                     | `mixed`                   |
 | `Arr::set($array, $key, $value)`                    | dérivé                     | `array`                   |
 | `Arr::setPath($array, $path, $value, $separator)`   | dérivé                     | `array`                   |
@@ -160,6 +170,10 @@ Aucune dépendance croisée entre traits ; le vocabulaire partagé est `Phyx\Enu
 | `Arr::indexOf($array, $value, $comparison)`      | `array_search`         | `array-key|null` |
 | `Arr::first($array, $callback, $default)`        | dérivé                 | `mixed`          |
 | `Arr::last($array, $callback, $default)`         | dérivé                 | `mixed`          |
+| `Arr::find($array, $callback, $default)`         | `array_find` backport  | `mixed`          |
+| `Arr::findKey($array, $callback)`                | `array_find_key` backport | `array-key|null` |
+| `Arr::any($array, $callback)`                    | `array_any` backport   | `bool`           |
+| `Arr::all($array, $callback)`                    | `array_all` backport   | `bool`           |
 | `Arr::where($array, $callback, $preserveKeys)`   | `array_filter`         | `array`          |
 | `Arr::containsKey($array, $key)`                 | `array_key_exists`     | `bool`           |
 
@@ -189,9 +203,9 @@ Aucune dépendance croisée entre traits ; le vocabulaire partagé est `Phyx\Enu
 
 | Phyx                                      | PHP natif / logique | Retour |
 |-------------------------------------------|---------------------|--------|
-| `Arr::pluck($array, $valueKey, $keyKey)`  | `array_column`      | `array`|
-| `Arr::groupBy($array, $callback)`         | dérivé              | `array`|
-| `Arr::keyBy($array, $callback)`           | dérivé              | `array`|
+| `Arr::pluck($array, $valueKey, $keyKey)`  | `array_column` + chemins | `array`|
+| `Arr::groupBy($array, $callback)`         | dérivé + sélecteurs | `array`|
+| `Arr::keyBy($array, $callback)`           | dérivé + sélecteurs | `array`|
 | `Arr::partition($array, $callback)`       | dérivé              | `array{0: array, 1: array}` |
 
 ### `HandleSort` - tri
@@ -200,7 +214,7 @@ Aucune dépendance croisée entre traits ; le vocabulaire partagé est `Phyx\Enu
 |--------------------------------------------------------|-------------------|--------|
 | `Arr::sort($array, $direction, $mode, $preserveKeys)`  | `sort` / `asort`  | `array`|
 | `Arr::sortKeys($array, $direction, $mode)`             | `ksort` / `krsort`| `array`|
-| `Arr::sortBy($array, $callback, $direction)`           | `uasort`          | `array`|
+| `Arr::sortBy($array, $callback, $direction)`           | `uasort` + sélecteurs | `array`|
 | `Arr::reverse($array, $preserveKeys)`                  | `array_reverse`   | `array`|
 
 ### `HandleSet` - opérations d'ensemble
@@ -208,6 +222,7 @@ Aucune dépendance croisée entre traits ; le vocabulaire partagé est `Phyx\Enu
 | Phyx                                      | PHP natif           | Retour |
 |-------------------------------------------|---------------------|--------|
 | `Arr::unique($array, $comparison)`        | `array_unique`      | `array`|
+| `Arr::uniqueBy($array, $selector)`        | dérivé              | `array`|
 | `Arr::duplicates($array, $comparison)`    | dérivé              | `array`|
 | `Arr::diff($array, ...$others)`           | `array_diff`        | `array`|
 | `Arr::intersect($array, ...$others)`      | `array_intersect`   | `array`|
