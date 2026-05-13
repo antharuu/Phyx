@@ -84,4 +84,18 @@ final class HandleGroupTest extends TestCase
             4 => $items[3],
         ], Arr::keyBy($items, 'id'));
     }
+
+    public function testKeyBySkipsItemsWithMissingSelectors(): void
+    {
+        $items = [
+            ['id' => 1, 'name' => 'Ada'],
+            ['name' => 'No id'],
+            ['id' => 2, 'name' => 'Grace'],
+        ];
+
+        self::assertSame([
+            1 => $items[0],
+            2 => $items[2],
+        ], Arr::keyBy($items, 'id'));
+    }
 }
