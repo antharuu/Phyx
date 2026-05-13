@@ -3,7 +3,7 @@
 [![CI](https://github.com/antharuu/Phyx/actions/workflows/ci.yml/badge.svg)](https://github.com/antharuu/Phyx/actions/workflows/ci.yml)
 [![Latest Stable Version](https://img.shields.io/packagist/v/antharuu/phyx.svg)](https://packagist.org/packages/antharuu/phyx)
 [![PHP Version Require](https://img.shields.io/packagist/dependency-v/antharuu/phyx/php.svg)](https://packagist.org/packages/antharuu/phyx)
-[![License](https://img.shields.io/packagist/l/antharuu/phyx.svg)](LICENSE)
+[![License](https://img.shields.io/packagist/l/antharuu/phyx.svg)](LICENSE) 
 
 Phyx is a modern PHP utility library that rethinks native PHP functions around a more coherent, readable, and predictable API.
 
