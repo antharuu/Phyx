@@ -47,6 +47,17 @@ final class HandleSetTest extends TestCase
         ], Arr::uniqueBy($users, static fn (array $user): mixed => $user['email'] ?? null));
     }
 
+    public function testUniqueByRejectsInvalidSelectors(): void
+    {
+        $this->expectException(\TypeError::class);
+        $this->expectExceptionMessage('Array selector must be a callable, string, or integer.');
+
+        /** @var mixed $selector */
+        $selector = [];
+
+        Arr::uniqueBy([['id' => 1]], $selector);
+    }
+
     public function testDiffIntersectAndUnionPreservePredictableNativeSemantics(): void
     {
         self::assertSame(['a' => 1], Arr::diff(['a' => 1, 'b' => 2], [2]));

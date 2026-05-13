@@ -60,12 +60,9 @@ trait HandleSelector
                 continue;
             }
 
-            if (is_object($current) && property_exists($current, $segment)) {
-                try {
-                    $current = $current->{$segment};
-                } catch (\Error) {
-                    return null;
-                }
+            $properties = is_object($current) ? get_object_vars($current) : [];
+            if (array_key_exists($segment, $properties)) {
+                $current = $properties[$segment];
                 continue;
             }
 
