@@ -1,5 +1,10 @@
 # Phyx
 
+[![CI](https://github.com/antharuu/Phyx/actions/workflows/ci.yml/badge.svg)](https://github.com/antharuu/Phyx/actions/workflows/ci.yml)
+[![Latest Stable Version](https://img.shields.io/packagist/v/antharuu/phyx.svg)](https://packagist.org/packages/antharuu/phyx)
+[![PHP Version Require](https://img.shields.io/packagist/dependency-v/antharuu/phyx/php.svg)](https://packagist.org/packages/antharuu/phyx)
+[![License](https://img.shields.io/packagist/l/antharuu/phyx.svg)](LICENSE)
+
 Phyx is a modern PHP utility library that rethinks native PHP functions around a more coherent, readable, and predictable API.
 
 It keeps the good parts of PHP: arrays, strings, paths, URLs, JSON, HTML, numbers, bytes. It removes as much historical friction as possible: inconsistent argument order, `false|int` return values, magic flags, multibyte traps, ambiguous parsing, and function names that were never designed as one standard library.
@@ -68,6 +73,10 @@ Requirements:
 - `ext-mbstring`
 
 PHP 8.3 conveniences such as `json_validate`, `str_increment`, and `str_decrement` are polyfilled where Phyx needs them, so the public API remains available on every supported PHP version.
+
+## Stability
+
+Phyx is preparing its first public release as `v0.1.0`. The library is tested, statically analyzed, and intended for real projects, but the public API may still receive small adjustments before `1.0.0`.
 
 ## The surface area
 
@@ -271,6 +280,14 @@ The README is a tour, not the manual. For full method lists, signatures, return 
 - [`docs/Path.md`](docs/Path.md)
 - [`docs/Num.md`](docs/Num.md)
 - [`docs/Bytes.md`](docs/Bytes.md)
+
+## Release notes
+
+See [`CHANGELOG.md`](CHANGELOG.md) for tagged release history.
+
+## License
+
+Phyx is released under the [MIT License](LICENSE).
 
 ## Development
 
