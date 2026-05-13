@@ -1,0 +1,59 @@
+name: Feature request
+description: Suggest a new helper, behavior, or improvement
+title: "Feature: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting an improvement. Phyx aims for small, coherent APIs around everyday PHP operations, so clear use cases matter.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or use case
+      description: What userland pattern, native PHP friction, or missing helper would this solve?
+      placeholder: Describe the concrete problem.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed API
+      description: Show the API you would like to use.
+      render: php
+      placeholder: |
+        use Phyx\Arr;
+
+        $result = Arr::example($value);
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: How would users solve this today with native PHP or existing Phyx APIs?
+    validations:
+      required: false
+
+  - type: textarea
+    id: semantics
+    attributes:
+      label: Edge cases and semantics
+      description: Empty inputs, missing keys, invalid values, key preservation, strictness, exceptions, PHP version concerns, etc.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist
+      options:
+        - label: I checked existing issues and did not find a duplicate.
+          required: true
+        - label: The proposal is compatible with PHP 8.1 or includes a PHP 8.1-compatible path.
+          required: true
+        - label: The proposal fits Phyx's goal of coherent, predictable utility APIs.
+          required: true

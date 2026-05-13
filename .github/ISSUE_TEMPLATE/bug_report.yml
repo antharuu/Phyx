@@ -1,0 +1,70 @@
+name: Bug report
+description: Report a reproducible problem in Phyx
+title: "Bug: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug. Please include a minimal reproduction so the issue can be verified quickly.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What happened? What did you expect instead?
+      placeholder: Describe the bug and the expected behavior.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction
+      description: Provide the smallest code sample that reproduces the issue.
+      render: php
+      placeholder: |
+        <?php
+
+        require 'vendor/autoload.php';
+
+        use Phyx\Str;
+
+        var_dump(Str::...);
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual result
+      description: Paste the actual output, exception, or stack trace.
+      render: text
+    validations:
+      required: false
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Include Phyx version, PHP version, OS, and relevant extensions.
+      value: |
+        - Phyx version:
+        - PHP version:
+        - OS:
+        - Composer version:
+        - Extensions:
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist
+      options:
+        - label: I can reproduce this on the latest released version or current `main`.
+          required: true
+        - label: I checked existing issues and did not find a duplicate.
+          required: true
+        - label: This is not a security vulnerability.
+          required: true
