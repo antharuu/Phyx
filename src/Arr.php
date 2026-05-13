@@ -15,8 +15,9 @@ namespace Phyx;
  */
 class Arr
 {
-    private const PATH_SEPARATOR_EMPTY_MESSAGE = 'Path separator must not be empty.';
+    protected const PATH_SEPARATOR_EMPTY_MESSAGE = 'Path separator must not be empty.';
 
+    use Arr\HandleSelector;
     use Arr\HandleAccess;
     use Arr\HandleInspect;
     use Arr\HandleSearch;

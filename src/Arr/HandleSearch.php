@@ -111,6 +111,112 @@ trait HandleSearch
     }
 
     /**
+     * Return the first element passing a given truth test.
+     *
+     * Iterates through the array and returns the first element for which the
+     * callback returns true. This mirrors the intent of PHP 8.4's `array_find`
+     * while remaining available on PHP 8.1. Returns the default value when no
+     * element matches.
+     *
+     * @param array<array-key, mixed>          $array    The source array.
+     * @param callable(mixed, array-key): bool $callback The predicate to apply.
+     * @param mixed                            $default  The value to return if no match is found. Defaults to null.
+     * @return mixed The first passing element or the default value.
+     *
+     * @example Arr::find([1, 2, 3], fn($v) => $v > 1) // => 2
+     * @example Arr::find([1, 2, 3], fn($v) => $v > 9, 'none') // => 'none'
+     *
+     * @see {@see Arr::first}
+     */
+    public static function find(array $array, callable $callback, mixed $default = null): mixed
+    {
+        foreach ($array as $key => $value) {
+            if ($callback($value, $key)) {
+                return $value;
+            }
+        }
+
+        return $default;
+    }
+
+    /**
+     * Return the key of the first element passing a given truth test.
+     *
+     * Iterates through the array and returns the first key for which the
+     * callback returns true. This mirrors the intent of PHP 8.4's
+     * `array_find_key` while preserving Phyx's value-then-key callback order.
+     * Returns null when no element matches.
+     *
+     * @param array<array-key, mixed>          $array    The source array.
+     * @param callable(mixed, array-key): bool $callback The predicate to apply.
+     * @return int|string|null The first matching key or null if no match is found.
+     *
+     * @example Arr::findKey(['a' => 1, 'b' => 2], fn($v) => $v === 2) // => 'b'
+     *
+     * @see {@see Arr::find}
+     */
+    public static function findKey(array $array, callable $callback): int|string|null
+    {
+        foreach ($array as $key => $value) {
+            if ($callback($value, $key)) {
+                return $key;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Determine whether at least one element passes a given truth test.
+     *
+     * Iterates through the array and stops as soon as the callback returns true.
+     * Empty arrays return false. This mirrors the intent of PHP 8.4's
+     * `array_any` while remaining available on PHP 8.1.
+     *
+     * @param array<array-key, mixed>          $array    The source array.
+     * @param callable(mixed, array-key): bool $callback The predicate to apply.
+     * @return bool True if any element passes, false otherwise.
+     *
+     * @example Arr::any([1, 2, 3], fn($v) => $v > 2) // => true
+     * @example Arr::any([], fn($v) => true) // => false
+     */
+    public static function any(array $array, callable $callback): bool
+    {
+        foreach ($array as $key => $value) {
+            if ($callback($value, $key)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Determine whether every element passes a given truth test.
+     *
+     * Iterates through the array and stops as soon as the callback returns
+     * false. Empty arrays return true, matching universal quantification and
+     * the behavior expected from PHP 8.4's `array_all` pattern.
+     *
+     * @param array<array-key, mixed>          $array    The source array.
+     * @param callable(mixed, array-key): bool $callback The predicate to apply.
+     * @return bool True if every element passes, false otherwise.
+     *
+     * @example Arr::all([2, 4, 6], fn($v) => $v % 2 === 0) // => true
+     * @example Arr::all([], fn($v) => false) // => true
+     */
+    public static function all(array $array, callable $callback): bool
+    {
+        foreach ($array as $key => $value) {
+            if (!$callback($value, $key)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * Filter the array using a given truth test.
      *
      * Returns a new array containing only the elements for which the callback

@@ -39,6 +39,43 @@ trait HandleSet
     }
 
     /**
+     * Remove duplicate values selected by a callback, key, or path.
+     *
+     * Iterates through the array and keeps the first item for each selected
+     * value. String and integer selectors read direct keys or dot-separated
+     * paths from arrays and public object properties. Missing selectors resolve
+     * to null, so only the first item with a missing selector is preserved.
+     * Keys from the original array are preserved.
+     *
+     * @param array<array-key, mixed>                       $array    The source array.
+     * @param (callable(mixed, array-key): mixed)|int|string $selector The value selector used for uniqueness.
+     * @return array<array-key, mixed> A new array with unique selected values.
+     *
+     * @example Arr::uniqueBy([['email' => 'a'], ['email' => 'a']], 'email') // => [['email' => 'a']]
+     * @example Arr::uniqueBy($users, fn($user) => $user->email) // => unique users by email
+     *
+     * @see {@see Arr::unique}
+     */
+    public static function uniqueBy(array $array, mixed $selector): array
+    {
+        $seen = [];
+        $result = [];
+        foreach ($array as $key => $value) {
+            $exists = false;
+            $selected = self::resolveSelector($value, $key, $selector, $exists);
+            if (!$exists) {
+                $selected = null;
+            }
+            if (!self::containsStrictValue($seen, $selected)) {
+                $seen[] = $selected;
+                $result[$key] = $value;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
      * Retrieve duplicate values from the array.
      *
      * Returns an array containing all values that appear more than once in

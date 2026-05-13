@@ -28,6 +28,27 @@ final class HandleSortTest extends TestCase
         self::assertSame(['c' => 3, 'b' => 2, 'a' => 1], Arr::reverse(['a' => 1, 'b' => 2, 'c' => 3], true));
     }
 
+    public function testSortBySupportsNestedSelectors(): void
+    {
+        $rows = [
+            'later' => ['meta' => ['createdAt' => '2024-02-01']],
+            'missing' => ['meta' => []],
+            'earlier' => ['meta' => ['createdAt' => '2024-01-01']],
+        ];
+
+        self::assertSame([
+            'missing' => $rows['missing'],
+            'earlier' => $rows['earlier'],
+            'later' => $rows['later'],
+        ], Arr::sortBy($rows, 'meta.createdAt'));
+
+        self::assertSame([
+            'later' => $rows['later'],
+            'earlier' => $rows['earlier'],
+            'missing' => $rows['missing'],
+        ], Arr::sortBy($rows, 'meta.createdAt', SortDirection::Descending));
+    }
+
     public function testSortModeMapsEverySupportedNativeFlag(): void
     {
         self::assertSame(['img1', 'img2', 'img10'], Arr::sort(['img10', 'img2', 'img1'], SortDirection::Ascending, SortMode::Natural));

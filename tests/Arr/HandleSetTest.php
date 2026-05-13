@@ -18,6 +18,35 @@ final class HandleSetTest extends TestCase
         self::assertSame(['b' => '1', 'c' => 1], Arr::duplicates(['a' => 1, 'b' => '1', 'c' => 1], Comparison::Loose));
     }
 
+    public function testUniqueByKeepsFirstItemForEachSelectedValue(): void
+    {
+        $users = [
+            'first' => ['email' => 'ada@example.test', 'profile' => ['team' => 'core']],
+            'second' => ['email' => 'grace@example.test', 'profile' => ['team' => 'core']],
+            'duplicate' => ['email' => 'ada@example.test', 'profile' => ['team' => 'docs']],
+            'missing' => ['name' => 'No email'],
+            'missing-again' => ['name' => 'Still no email'],
+        ];
+
+        self::assertSame([
+            'first' => $users['first'],
+            'second' => $users['second'],
+            'missing' => $users['missing'],
+        ], Arr::uniqueBy($users, 'email'));
+
+        self::assertSame([
+            'first' => $users['first'],
+            'duplicate' => $users['duplicate'],
+            'missing' => $users['missing'],
+        ], Arr::uniqueBy($users, 'profile.team'));
+
+        self::assertSame([
+            'first' => $users['first'],
+            'second' => $users['second'],
+            'missing' => $users['missing'],
+        ], Arr::uniqueBy($users, static fn (array $user): mixed => $user['email'] ?? null));
+    }
+
     public function testDiffIntersectAndUnionPreservePredictableNativeSemantics(): void
     {
         self::assertSame(['a' => 1], Arr::diff(['a' => 1, 'b' => 2], [2]));

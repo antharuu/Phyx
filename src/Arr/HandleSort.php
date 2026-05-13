@@ -70,7 +70,7 @@ trait HandleSort
      * derive a sorting value. The array is then sorted based on those values.
      *
      * @param array<array-key, mixed>           $array     The array to sort.
-     * @param callable(mixed, array-key): mixed $callback  The callback to extract sorting criteria.
+     * @param (callable(mixed, array-key): mixed)|int|string $callback  The selector used to extract sorting criteria.
      * @param SortDirection                     $direction The sorting direction. {@see SortDirection}. Defaults to SortDirection::Ascending.
      * @return array<array-key, mixed> The sorted array.
      *
@@ -78,11 +78,12 @@ trait HandleSort
      *
      * @see uksort
      */
-    public static function sortBy(array $array, callable $callback, SortDirection $direction = SortDirection::Ascending): array
+    public static function sortBy(array $array, mixed $callback, SortDirection $direction = SortDirection::Ascending): array
     {
         $criteria = [];
         foreach ($array as $key => $value) {
-            $criteria[$key] = $callback($value, $key);
+            $exists = false;
+            $criteria[$key] = self::resolveSelector($value, $key, $callback, $exists);
         }
 
         uksort($array, static function (int|string $leftKey, int|string $rightKey) use ($criteria, $direction): int {

@@ -29,6 +29,57 @@ trait HandleAccess
     }
 
     /**
+     * Return a copy containing only the requested direct keys.
+     *
+     * Iterates over the requested keys and copies the matching values from the
+     * source array. Missing keys are ignored, original values are preserved, and
+     * the result follows the order of the requested keys for predictable shaping.
+     *
+     * @param array<array-key, mixed> $array The source array to filter.
+     * @param list<int|string>        $keys  The direct keys to keep.
+     * @return array<array-key, mixed> A copy containing only the requested existing keys.
+     *
+     * @example Arr::only(['id' => 1, 'name' => 'Ada'], ['name']) // => ['name' => 'Ada']
+     *
+     * @see array_intersect_key
+     */
+    public static function only(array $array, array $keys): array
+    {
+        $result = [];
+        foreach ($keys as $key) {
+            if (array_key_exists($key, $array)) {
+                $result[$key] = $array[$key];
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Return a copy without the requested direct keys.
+     *
+     * Removes each requested key from a copy of the source array. Missing keys
+     * are ignored and the remaining keys keep their original order and values.
+     * This method never mutates the input array.
+     *
+     * @param array<array-key, mixed> $array The source array to filter.
+     * @param list<int|string>        $keys  The direct keys to remove.
+     * @return array<array-key, mixed> A copy without the requested keys.
+     *
+     * @example Arr::except(['id' => 1, 'password' => 'x'], ['password']) // => ['id' => 1]
+     *
+     * @see array_diff_key
+     */
+    public static function except(array $array, array $keys): array
+    {
+        foreach ($keys as $key) {
+            unset($array[$key]);
+        }
+
+        return $array;
+    }
+
+    /**
      * Return a nested value addressed by a separated path.
      *
      * Traverses the array using the given path segments. If any segment is missing
